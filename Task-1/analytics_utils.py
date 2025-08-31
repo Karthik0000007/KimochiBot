@@ -1,6 +1,6 @@
 import pandas as pd
 
-def load_data(file="Task-1\\customer_service_interactions.csv"):
+def load_data(file="customer_service_interactions.csv"):
     try:
         df = pd.read_csv(file)
         # Clean the data - convert satisfaction to numeric, handle missing values

@@ -102,11 +102,7 @@ This task enhances the existing chatbot system by integrating Sentiment Analysis
 
 ### 1. Clone this project and navigate to the folder
 ```bash
-<<<<<<< HEAD
 git clone <https://github.com/Karthik0000007/KimochiBot>
-=======
-git clone <https://github.com/Karthik0000007/NULLCLASS>
->>>>>>> 586723f9c59ab23ab4fdc2e4b9da70422ffd75bd
 cd Task-3
 ```
 ### 2. Install dependencies

@@ -3,173 +3,394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Customer Support Analytics Dashboard — track queries, satisfaction, and trending topics.">
+    <meta name="theme-color" content="#4361ee">
     <title>Customer Support Analytics Dashboard</title>
     <style>
+        /* ===== Design Tokens ===== */
         :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --accent-color: #4895ef;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
+            --clr-primary: #3a56d4;
+            --clr-primary-light: #eef1fb;
+            --clr-secondary: #2d2f8e;
+            --clr-accent: #0077cc;
+            --clr-success: #1a8754;
+            --clr-warning: #e09f20;
+            --clr-danger: #d13438;
+            --clr-surface: #ffffff;
+            --clr-bg: #f0f2f5;
+            --clr-text: #1a1a2e;
+            --clr-text-muted: #5a5f72;
+            --clr-border: #dee2e8;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            --transition: 0.2s ease;
         }
-        
+
+        /* ===== Reset & Base ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-sans);
             line-height: 1.6;
-            color: var(--dark-color);
-            background-color: #f5f7fa;
-            margin: 0;
-            padding: 20px;
+            color: var(--clr-text);
+            background-color: var(--clr-bg);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
-        
+
+        /* ===== Skip Link (Accessibility) ===== */
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: 1rem;
+            background: var(--clr-primary);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            z-index: 1000;
+            font-weight: 600;
+            text-decoration: none;
+            transition: top var(--transition);
+        }
+        .skip-link:focus {
+            top: 1rem;
+        }
+
+        /* ===== Focus Styles (Accessibility) ===== */
+        :focus-visible {
+            outline: 3px solid var(--clr-accent);
+            outline-offset: 2px;
+        }
+
+        /* ===== Layout ===== */
         .container {
-            max-width: 1200px;
+            max-width: 1140px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 1.5rem;
         }
-        
-        header {
+
+        /* ===== Header ===== */
+        .dashboard-header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            padding: 1.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            color: #fff;
         }
-        
-        h1 {
-            color: var(--primary-color);
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        .dashboard-header h1 {
+            font-size: clamp(1.4rem, 4vw, 2.2rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
         }
-        
-        .dashboard-grid {
+        .dashboard-header p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        /* ===== Stat Cards Grid ===== */
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
         }
-        
+
         .stat-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: var(--clr-surface);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: transform var(--transition), box-shadow var(--transition);
+            border: 1px solid var(--clr-border);
+            position: relative;
+            overflow: hidden;
         }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
         }
-        
-        .stat-card h2 {
-            color: var(--secondary-color);
-            font-size: 1.5rem;
-            margin-bottom: 15px;
+        .stat-card--queries::before  { background: var(--clr-primary); }
+        .stat-card--rating::before   { background: var(--clr-success); }
+        .stat-card--topics::before   { background: var(--clr-accent); }
+
+        .stat-card:hover, .stat-card:focus-within {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
         }
-        
-        .stat-card p {
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin: 0;
+
+        .stat-card__icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
         }
-        
+        .stat-card__label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--clr-text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .stat-card__value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--clr-text);
+            line-height: 1.1;
+        }
+        .stat-card__sub {
+            font-size: 0.85rem;
+            color: var(--clr-text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Satisfaction color logic */
+        .rating--high   { color: var(--clr-success); }
+        .rating--mid    { color: var(--clr-warning); }
+        .rating--low    { color: var(--clr-danger); }
+
+        /* ===== Topics Section ===== */
         .topics-section {
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: var(--clr-surface);
+            border-radius: var(--radius-md);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--clr-border);
         }
-        
-        .topics-section h2 {
-            color: var(--secondary-color);
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent-color);
+        .topics-section__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--clr-bg);
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
-        
+        .topics-section__title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--clr-text);
+        }
+        .topics-section__badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--clr-primary-light);
+            color: var(--clr-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+        }
+
         .topics-list {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
             margin: 0;
         }
-        
-        .topics-list li {
-            padding: 15px;
-            margin-bottom: 10px;
-            background-color: var(--light-color);
-            border-left: 4px solid var(--accent-color);
-            font-size: 1.2rem;
+        .topics-list__item {
             display: flex;
+            align-items: center;
             justify-content: space-between;
+            padding: 0.875rem 1rem;
+            margin-bottom: 0.5rem;
+            background: var(--clr-bg);
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--clr-accent);
+            transition: background var(--transition);
+            gap: 0.75rem;
         }
-        
-        .topic-name {
-            font-weight: bold;
+        .topics-list__item:last-child {
+            margin-bottom: 0;
         }
-        
-        .topic-count {
-            background-color: var(--accent-color);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 1rem;
+        .topics-list__item:hover {
+            background: var(--clr-primary-light);
         }
-        
-        .no-data {
+
+        .topics-list__rank {
+            width: 1.75rem;
+            height: 1.75rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--clr-primary);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .topics-list__name {
+            font-weight: 600;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .topics-list__bar-wrapper {
+            flex: 1;
+            max-width: 200px;
+            height: 8px;
+            background: var(--clr-border);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .topics-list__bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--clr-primary), var(--clr-accent));
+            border-radius: 999px;
+            transition: width 0.6s ease;
+        }
+        .topics-list__count {
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: var(--clr-accent);
+            color: #fff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .empty-state {
             text-align: center;
-            padding: 20px;
-            color: #6c757d;
-            font-size: 1.2rem;
+            padding: 2.5rem 1rem;
+            color: var(--clr-text-muted);
         }
-        
+        .empty-state__icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        /* ===== Footer ===== */
+        .dashboard-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            font-size: 0.8rem;
+            color: var(--clr-text-muted);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            .topics-list__bar-wrapper {
+                max-width: 140px;
+            }
+        }
+
         @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
+            .container { padding: 1rem; }
+            .dashboard-header { padding: 1.25rem 1rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+            .stat-card__value { font-size: 1.6rem; }
+            .topics-list__bar-wrapper { display: none; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .stat-card { padding: 1.25rem; }
+            .topics-section { padding: 1.25rem; }
+            .topics-list__item {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                padding: 0.75rem;
             }
-            
-            h1 {
-                font-size: 2rem;
-            }
+        }
+
+        /* ===== Print ===== */
+        @media print {
+            body { background: #fff; }
+            .stat-card, .topics-section { box-shadow: none; border: 1px solid #ccc; }
+            .stat-card:hover { transform: none; }
         }
     </style>
 </head>
 <body>
+    <!-- Skip-to-content link for keyboard navigation -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <div class="container">
-        <header>
-            <h1>📊 Customer Support Analytics Dashboard</h1>
+        <!-- Header -->
+        <header class="dashboard-header" role="banner">
+            <h1>Customer Support Analytics</h1>
+            <p>Real-time insights from chatbot interactions</p>
         </header>
-        
-        <div class="dashboard-grid">
-            <div class="stat-card">
-                <h2>Total Queries</h2>
-                <p>{{ total }}</p>
-            </div>
-            
-            <div class="stat-card">
-                <h2>Average Satisfaction</h2>
-                <p>{{ avg_rating }} <span style="font-size: 1.2rem; color: var(--dark-color);">/ 5</span></p>
-            </div>
-        </div>
-        
-        <div class="topics-section">
-            <h2>Top Topics</h2>
-            {% if topics %}
-                <ul class="topics-list">
-                    {% for topic, count in topics.items() %}
-                    <li>
-                        <span class="topic-name">{{ topic }}</span>
-                        <span class="topic-count">{{ count }} queries</span>
-                    </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="no-data">No topic data available</p>
-            {% endif %}
-        </div>
+
+        <!-- Main Content -->
+        <main id="main-content" aria-label="Dashboard statistics">
+
+            <!-- Stat Cards -->
+            <section class="stats-grid" aria-label="Key metrics">
+                <article class="stat-card stat-card--queries" aria-label="Total queries: {{ total }}">
+                    <span class="stat-card__icon" aria-hidden="true">&#128172;</span>
+                    <h2 class="stat-card__label">Total Queries</h2>
+                    <p class="stat-card__value">{{ total }}</p>
+                    <p class="stat-card__sub">All time</p>
+                </article>
+
+                <article class="stat-card stat-card--rating" aria-label="Average satisfaction: {{ avg_rating }} out of 5">
+                    <span class="stat-card__icon" aria-hidden="true">&#11088;</span>
+                    <h2 class="stat-card__label">Avg. Satisfaction</h2>
+                    <p class="stat-card__value {% if avg_rating >= 4 %}rating--high{% elif avg_rating >= 2.5 %}rating--mid{% else %}rating--low{% endif %}">
+                        {{ avg_rating }}<span class="stat-card__sub"> / 5</span>
+                    </p>
+                </article>
+
+                <article class="stat-card stat-card--topics" aria-label="Number of unique topics: {{ topics|length if topics else 0 }}">
+                    <span class="stat-card__icon" aria-hidden="true">&#128218;</span>
+                    <h2 class="stat-card__label">Unique Topics</h2>
+                    <p class="stat-card__value">{{ topics|length if topics else 0 }}</p>
+                    <p class="stat-card__sub">Categories tracked</p>
+                </article>
+            </section>
+
+            <!-- Topics -->
+            <section class="topics-section" aria-label="Top discussion topics">
+                <div class="topics-section__header">
+                    <h2 class="topics-section__title">Top Topics</h2>
+                    {% if topics %}
+                    <span class="topics-section__badge">Top {{ topics|length }}</span>
+                    {% endif %}
+                </div>
+
+                {% if topics %}
+                    {% set max_count = topics.values()|list|max %}
+                    <ol class="topics-list" role="list">
+                        {% for topic, count in topics.items() %}
+                        <li class="topics-list__item" role="listitem">
+                            <span class="topics-list__rank" aria-hidden="true">{{ loop.index }}</span>
+                            <span class="topics-list__name">{{ topic }}</span>
+                            <span class="topics-list__bar-wrapper" aria-hidden="true">
+                                <span class="topics-list__bar" style="width: {{ (count / max_count * 100)|round }}%"></span>
+                            </span>
+                            <span class="topics-list__count" aria-label="{{ count }} queries">{{ count }}</span>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                {% else %}
+                    <div class="empty-state" role="status">
+                        <span class="empty-state__icon" aria-hidden="true">&#128269;</span>
+                        <p>No topic data available yet.</p>
+                    </div>
+                {% endif %}
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer" role="contentinfo">
+            <p>&copy; 2026 KimochiBot &middot; Customer Support Analytics</p>
+        </footer>
     </div>
 </body>
 </html>

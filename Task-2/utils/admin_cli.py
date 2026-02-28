@@ -30,7 +30,7 @@ def manual_update():
     print("\nManually updating vector store...")
     refresh_vector_store()
     log_last_update()
-    print("pdate complete!")
+    print("Update complete!")
 
 def dashboard():
     while True:
